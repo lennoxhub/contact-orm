@@ -43,10 +43,10 @@ class ContactEditTest(unittest.TestCase):
         self.contactsApp.clear()
         pass
         
-    def testEditContact(self):
+    def testEditContactName(self):
         contactId = 1
-        oldName = 'Lennox'
-        newName = 'Leonard'
+        oldName, newName = 'Lennox', 'Leonard'
+        oldPhone, newPhone = '02099888999', '02011222111'
         #check confirm contact's old name
         contact = self.contactsApp.retrieve(contactId)
         self.assertEquals(contact.name, oldName)
@@ -54,23 +54,34 @@ class ContactEditTest(unittest.TestCase):
         
         #update contact's name
         contact.name = newName
+        contact.phone = newPhone
         successful = self.contactsApp.update(contact)
         self.failUnless(successful)
         
         #confirm contact's new name after update
         contact = self.contactsApp.retrieve(contactId)
         self.assertEquals(contact.name, newName)
-        #successful = self.contactsApp.editContactName(contactId, newName)
-
-
+        self.assertNotEquals(contact.name, oldName)
         
-#     def testSaveNewContactFail(self):
-#         name = 'Lennox'
-#         gender = ContactsApp.MALE
-#         phone = '02099888999'
-#         description = 'black, short'
-#         contact = self.contactsApp.save(name, gender, phone, description)
-#         self.failIf(contact)
+    def testEditContactPhone(self):
+        contactId = 1
+        oldPhone, newPhone = '02099888999', '02011222111'
+        #check confirm contact's old phone
+        contact = self.contactsApp.retrieve(contactId)
+        self.assertEquals(contact.phone, oldPhone)
+        self.assertNotEquals(contact.phone, newPhone)
+        
+        #update contact's phone
+        contact.phone = newPhone
+        successful = self.contactsApp.update(contact)
+        self.failUnless(successful)
+        
+        #confirm contact's new name after update
+        contact = self.contactsApp.retrieve(contactId)
+        self.assertEquals(contact.phone, newPhone)
+        self.assertNotEquals(contact.phone, oldPhone)
+        
+
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

@@ -8,11 +8,12 @@ UNDEFINED_ID = None
 class ContactsApp(object):
     MALE = 'male'
     FEMALE = 'female'
-    def __init__(self, username, password, host="localhost", dbName=''):
+    def __init__(self, username, password, host="localhost", dbName='', tableName='contacts'):
         self.dbUsername = username
         self.dbPassword = password
         self.dbHost = host
         self.dbName = dbName
+        self.tableName = tableName
         pass
     
     def connect(self):
@@ -25,8 +26,8 @@ class ContactsApp(object):
     def retrieve(self, contactId):
         cursor = self.conn.cursor()
         try:
-            sql = """SELECT name, gender, phone, description, id FROM contacts
-                     WHERE id = '{}'""".format(contactId)
+            sql = """SELECT name, gender, phone, description, id FROM {}
+                     WHERE id = '{}'""".format(self.tableName, contactId)
             
             cursor.execute(sql)
             row = cursor.fetchone()
@@ -61,12 +62,31 @@ class ContactsApp(object):
     def clear(self):
         cursor = self.conn.cursor()
         try:
-            sql = "TRUNCATE TABLE contacts"
+            sql = "TRUNCATE TABLE {}".format(self.tableName)
             cursor.execute(sql)
             self.conn.commit()
         except Exception, e:
             self.conn.rollback()
             raise e 
+        
+    def update(self, contact):
+        cursor = self.conn.cursor()
+        try:
+            sql = """UPDATE {} SET name='{}', gender='{}', phone='{}', description='{}' 
+                    WHERE id='{}'""".format(self.tableName, 
+                                            contact.name, 
+                                            contact.gender, 
+                                            contact.phone, 
+                                            contact.description, 
+                                            contact.id)
+            cursor.execute(sql)
+            self.conn.commit()
+            return True
+        except Exception, e:
+            self.conn.rollback()
+            raise e 
+        
+            
         
 class Contact():
     def __init__(self, name, gender, phone, description, id=UNDEFINED_ID):
@@ -78,3 +98,4 @@ class Contact():
         
     def saved(self):
         return self.id != UNDEFINED_ID    
+    
