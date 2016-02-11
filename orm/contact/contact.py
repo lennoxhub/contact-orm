@@ -31,8 +31,10 @@ class ContactsApp(object):
             
             cursor.execute(sql)
             row = cursor.fetchone()
-            print row
-            return Contact(row[0], row[1], row[2], row[3], id = row[4])
+            if row:
+                return Contact(row[0], row[1], row[2], row[3], id = row[4])
+            else:
+                return None
         except Exception, e:
             self.conn.rollback()
             raise e
@@ -79,6 +81,17 @@ class ContactsApp(object):
                                             contact.phone, 
                                             contact.description, 
                                             contact.id)
+            cursor.execute(sql)
+            self.conn.commit()
+            return True
+        except Exception, e:
+            self.conn.rollback()
+            raise e 
+        
+    def delete(self, id):
+        cursor = self.conn.cursor()
+        try:
+            sql = """DELETE FROM {} WHERE id='{}'""".format(self.tableName, id)
             cursor.execute(sql)
             self.conn.commit()
             return True

@@ -81,7 +81,30 @@ class ContactEditTest(unittest.TestCase):
         self.assertEquals(contact.phone, newPhone)
         self.assertNotEquals(contact.phone, oldPhone)
         
+class ContactDeleteTest(unittest.TestCase):
+    def setUp(self):
+        self.contactsApp = ContactsApp(USERNAME, PASSWORD, dbName=DBNAME)
+        self.contactsApp.connect()
+        self.contactsApp.save(testContact)
 
+    def tearDown(self):
+        self.contactsApp.clear()
+    
+    def testDeleteContactById(self):
+        contactId = 1
+        #check if contact #1 exist
+        contact = self.contactsApp.retrieve(contactId)
+        self.failUnless(contact)
+        
+        #delete contact #1 
+        successful = self.contactsApp.delete(contactId)
+        self.failUnless(successful)
+        
+        #confirm contact #1 no longer exist
+        contact = self.contactsApp.retrieve(contactId)
+        self.failIf( contact )
+        #self.assertRaises(excClass, callableObj)
+    
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
