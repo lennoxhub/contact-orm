@@ -5,7 +5,7 @@ Created on Feb 11, 2016
 '''
 import MySQLdb as mdb
 UNDEFINED_ID = None
-class ContactsApp(object):
+class ContactsDb(object):
     MALE = 'male'
     FEMALE = 'female'
     def __init__(self, username, password, host="localhost", dbName='', tableName='contacts'):
@@ -102,12 +102,39 @@ class ContactsApp(object):
             
         
 class Contact():
+    @classmethod
+    def connect(cls, contactDb):
+        cls.contactDb = contactDb
+        cls.contactDb.connect()
+       
+    @classmethod 
+    def clear(cls):
+        cls.contactDb.clear()
+        
+    @classmethod
+    def retrieve(cls, id):
+        return cls.contactDb.retrieve(id)
+        
     def __init__(self, name, gender, phone, description, id=UNDEFINED_ID):
         self.name = name
         self.gender = gender
         self.phone = phone
         self.description = description
         self.id = id
+        
+    def save(self):
+        return Contact.contactDb.save(self)
+    
+    def delete(self):
+        if self.id:
+            return Contact.contactDb.delete(self.id)
+        return False
+    
+    def update(self):
+        if self.id:
+            return Contact.contactDb.update(self)
+        return False
+        
         
     def saved(self):
         return self.id != UNDEFINED_ID    
