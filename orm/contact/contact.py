@@ -19,9 +19,23 @@ class ContactsApp(object):
         self.conn = mdb.connect(self.dbHost, self.dbUsername, self.dbPassword, self.dbName)
         return True
     
-    def save(self, name, gender, phone, description, id=UNDEFINED_ID):
-        contact = Contact(name, gender, phone, description)
+    def save(self, contact):
         return self._insert(contact)
+    
+    def retrieve(self, contactId):
+        cursor = self.conn.cursor()
+        try:
+            sql = """SELECT name, gender, phone, description, id FROM contacts
+                     WHERE id = '{}'""".format(contactId)
+            
+            cursor.execute(sql)
+            row = cursor.fetchone()
+            print row
+            return Contact(row[0], row[1], row[2], row[3], id = row[4])
+        except Exception, e:
+            self.conn.rollback()
+            raise e
+
     
     def _insert(self, contact):
         cursor = self.conn.cursor()
