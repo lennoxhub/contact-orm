@@ -27,4 +27,10 @@ apt-get install mysql-server -y
 apt-get install mysql-client -y
 apt-get install libmysqlclient-dev -y
 
+echo "Create Databases and tables"
+mysql -u root -p1234 -e "CREATE DATABASE contacts_orm"
+mysql -u root -p1234 -e "CREATE DATABASE contacts_orm_test"
+mysql -u root -p1234 -e "CREATE TABLE contacts_orm.contacts(id INT NOT NULL AUTO_INCREMENT, name VARCHAR(40) NOT NULL, gender VARCHAR(10) NOT NULL, phone VARCHAR(20) NOT NULL, description VARCHAR(60) NOT NULL, PRIMARY KEY ( id ) )"
+mysql -u root -p1234 -e "CREATE TABLE contacts_orm_test.contacts(id INT NOT NULL AUTO_INCREMENT, name VARCHAR(40) NOT NULL, gender VARCHAR(10) NOT NULL, phone VARCHAR(20) NOT NULL, description VARCHAR(60) NOT NULL, PRIMARY KEY ( id ) )"
+
 echo "Done."

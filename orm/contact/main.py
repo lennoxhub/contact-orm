@@ -16,7 +16,7 @@ class ContactsApp():
         3   Delete Contact
         4   Show Contact 
 @Main{}""".format(quitChar, prompt )
-        contactDb = ContactsDb('localhost', 'root', 'leonardo', 'contacts_orm', 'contacts' )
+        contactDb = ContactsDb('localhost', 'root', '1234', 'contacts_orm', 'contacts' )
         Contact.connect(contactDb)
         pass
     

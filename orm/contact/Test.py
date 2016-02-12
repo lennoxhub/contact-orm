@@ -8,9 +8,9 @@ from contact import ContactsDb, Contact
 from _mysql_exceptions import OperationalError
 HOST = 'localhost'
 USERNAME = 'root'
-PASSWORD = 'leonardo'
+PASSWORD = '1234'
 TABLE = 'contacts'
-DBNAME = 'contacts_orm'
+DBNAME = 'contacts_orm_test'
 testContact = Contact('Lennox', ContactsDb.MALE, '02099888999', 'self')
 testContact2 = Contact('Leonard', ContactsDb.MALE, '03044556646', 'other self')
 
