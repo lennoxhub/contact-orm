@@ -5,18 +5,17 @@ Created on Feb 11, 2016
 '''
 from contact import Contact, ContactsDb
 class ContactsApp():
-    QUIT_CHAR = '\\'  
-    prompt = ":> "
-    print "Contacts 0.1\n"
-    quitMenu = QUIT_CHAR+"   Exit Prompt\n"
-    mainMenu = quitMenu + """1   Create Contact
-2   Edit Contact
-3   Delete Contact
-4   Show Contact
-@Main"""+prompt
-
-    def __init__(self, prompt=":> "):
+    print "Contacts 0.1"
+    def __init__(self, prompt=":> ", quitChar='\\'):
         self.prompt = prompt
+        self.quitChar = quitChar
+        self.mainMenu = """   
+        {}   Exit Prompt
+        1   Create Contact
+        2   Edit Contact
+        3   Delete Contact
+        4   Show Contact 
+@Main{}""".format(quitChar, prompt )
         contactDb = ContactsDb('localhost', 'root', 'leonardo', 'contacts_orm', 'contacts' )
         Contact.connect(contactDb)
         pass
@@ -24,8 +23,7 @@ class ContactsApp():
     def run(self):
         entry = ''
         while True :
-            self.editContactPrompt()
-            entry = raw_input(ContactsApp.mainMenu).strip()
+            entry = raw_input(self.mainMenu).strip()
             if  entry == '1': 
                 self.createNewContactPrompt()
             elif entry == '2': 
@@ -34,7 +32,7 @@ class ContactsApp():
                 self.deleteContactPrompt()
             elif entry == '4': 
                 self.showContactPrompt()
-            elif entry == ContactsApp.QUIT_CHAR: 
+            elif entry == self.quitChar: 
                 break
             else: 
                 print 'Invalid Input. Enter (1, 2, 3, 4 or \q) \n'
@@ -51,11 +49,42 @@ class ContactsApp():
         editor = EditContactPrompt(self.prompt)
         id = editor.readContactId()
         contact = Contact.retrieve(id)
-        contact.name = editor.readEdittedName(contact.name)
-        contact.phone = editor.readEdittedPhone(contact.phone)
-        contact.gender = editor.readEdittedGender(contact.gender)
-        contact.description = editor.readEdittedDescription(contact.description)
-        print contact
+        if contact:
+            contact.name = editor.readEdittedName(contact.name)
+            contact.phone = editor.readEdittedPhone(contact.phone)
+            contact.gender = editor.readEdittedGender(contact.gender)
+            contact.description = editor.readEdittedDescription(contact.description)
+            contact.update()
+            print '{} UPDATED\n'.format(contact)
+        else:
+            print 'Contact #{} does not exist'.format(id)
+            self.editContactPrompt()
+        
+    def deleteContactPrompt(self):
+        deleter = DeleteContactPrompt(self.prompt)
+        id = deleter.readContactIdForDeletion()
+        contact = Contact.retrieve(id)
+        if contact:
+            if contact.delete() :
+                print '{} DELETED'.format(contact) 
+        else:
+            print 'Contact #{} does not exist'.format(id)
+            self.deleteContactPrompt()
+            
+    def showContactPrompt(self):
+        shower = ShowContactPrompt(self.prompt)
+        id = shower.readContactIdToShow()
+        if id == -1:
+            contacts = Contact.retrieveAll()
+            shower.showAll(contacts)
+            return 
+        
+        contact = Contact.retrieve(id)
+        if contact:
+            shower.show(contact)
+        else:
+            print 'Contact #{} does not exist'.format(id)
+            shower.readContactIdToShow()
         
 
 class EditContactPrompt():
@@ -97,8 +126,47 @@ class EditContactPrompt():
         else:
             return oldGender
         
-
+class DeleteContactPrompt():
+    def __init__(self, prompt):
+        self.prompt = prompt
+        pass
+    
+    def readContactIdForDeletion(self):
+        id_ = raw_input("@Delete:#id of contact to delete?")
+        try:
+            return int(id_)
+        except ValueError:
+            print id_+' is an invalid Id'
+            self.readContactIdForDeletion()
         
+class ShowContactPrompt():
+    def __init__(self, prompt):
+        self.prompt = prompt
+        pass
+    
+    def readContactIdToShow(self):
+        id_ = raw_input("@Show:#id of contact or -1 to view all?")
+        try:
+            return int(id_)
+        except ValueError:
+            print id_+' is an invalid Id'
+            self.readContactIdToShow()
+            
+    def showAll(self, contacts):
+        for contact in contacts:
+            self.show(contact)
+    
+    def show(self, contact):
+        contactTpl = '''
+        id             :{}
+        name           :{}
+        gender         :{}
+        phone          :{}
+        description    :{}
+        '''
+        print contactTpl.format(contact.id, contact.name,  
+                                contact.gender, contact.phone,
+                                contact.description)
         
             
 class NewContactPrompt():
@@ -123,7 +191,6 @@ class NewContactPrompt():
             print 'name is required'
             self.readName()
         
-    
     def readPhone(self):
         enterContactPhone = "@Create:"+'phone number?'+self.prompt
         phone = raw_input(enterContactPhone).strip()

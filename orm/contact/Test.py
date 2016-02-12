@@ -11,7 +11,8 @@ USERNAME = 'root'
 PASSWORD = 'leonardo'
 TABLE = 'contacts'
 DBNAME = 'contacts_orm'
-testContact = Contact('Lennox', ContactsDb.MALE, '02099888999', 'black, short')
+testContact = Contact('Lennox', ContactsDb.MALE, '02099888999', 'self')
+testContact2 = Contact('Leonard', ContactsDb.MALE, '03044556646', 'other self')
 
 class TestDb(unittest.TestCase):
     def testDbConnect(self):
@@ -110,6 +111,7 @@ class ContactRetrieveTest(unittest.TestCase):
         cdb = ContactsDb(HOST, USERNAME, PASSWORD, DBNAME, TABLE)
         Contact.connect(cdb)
         testContact.save()
+        testContact2.save() 
 
     def tearDown(self):
         Contact.clear()
@@ -121,6 +123,12 @@ class ContactRetrieveTest(unittest.TestCase):
         self.failUnless(contact)
         self.assertEqual(contactId, contact.id)
         #self.assertRaises(excClass, callableObj)
+        
+    def testRetrieveAll(self):
+        contacts = Contact.retrieveAll()
+        self.assertEquals(len(contacts), 2)
+        
+        
     
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

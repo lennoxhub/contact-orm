@@ -38,6 +38,26 @@ class ContactsDb(object):
         except Exception, e:
             self.conn.rollback()
             raise e
+        
+    def retrieveAll(self):
+        cursor = self.conn.cursor()
+        try:
+            sql = "SELECT name,gender,phone,description,id FROM {}".format(self.tableName)
+            
+            cursor.execute(sql)
+            rows = cursor.fetchall()
+            contacts = []
+            if rows:
+                for row in rows:
+                    contacts.append(
+                        Contact(row[0], row[1], row[2], row[3], id = row[4])
+                    )
+                return contacts    
+            else:
+                return contacts
+        except Exception, e:
+            self.conn.rollback()
+            raise e
 
     
     def _insert(self, contact):
@@ -111,6 +131,10 @@ class Contact():
         cls.contactDb.clear()
         
     @classmethod
+    def retrieveAll(cls):
+        return cls.contactDb.retrieveAll()
+    
+    @classmethod
     def retrieve(cls, id):
         return cls.contactDb.retrieve(id)
         
@@ -135,7 +159,7 @@ class Contact():
         return False
     
     def __repr__(self):
-        return '#{} {} ({}) {} phone:{}'.format(self.id, self.name, self.gender,
+        return '#{} name:{}({}) description:{} phone:{}'.format(self.id, self.name, self.gender,
                                                 self.description, self.phone)
     
     def __str__(self):
