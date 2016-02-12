@@ -6,22 +6,24 @@ Created on Feb 11, 2016
 import unittest
 from contact import ContactsDb, Contact
 from _mysql_exceptions import OperationalError
+HOST = 'localhost'
 USERNAME = 'root'
 PASSWORD = 'leonardo'
+TABLE = 'contacts'
 DBNAME = 'contacts_orm'
 testContact = Contact('Lennox', ContactsDb.MALE, '02099888999', 'black, short')
 
 class TestDb(unittest.TestCase):
     def testDbConnect(self):
-        self.assertTrue(ContactsDb(USERNAME, PASSWORD, dbName=DBNAME).connect())
+        self.assertTrue(ContactsDb(HOST, USERNAME, PASSWORD, DBNAME, TABLE).connect())
         pass
 
     def testWrongPasswordForConnect(self):
-        self.assertRaises(OperationalError, ContactsDb(USERNAME, 'wrongpassword', dbName=DBNAME).connect)
+        self.assertRaises(OperationalError, ContactsDb(HOST, USERNAME, 'wrongpassword', DBNAME, TABLE).connect)
         
 class ContactSaveTest(unittest.TestCase):
     def setUp(self):
-        cdb = ContactsDb(USERNAME, PASSWORD, dbName=DBNAME)
+        cdb = ContactsDb(HOST, USERNAME, PASSWORD, DBNAME, TABLE)
         Contact.connect(cdb)
 
     def tearDown(self):
@@ -35,7 +37,7 @@ class ContactSaveTest(unittest.TestCase):
         
 class ContactEditTest(unittest.TestCase):
     def setUp(self):
-        cdb = ContactsDb(USERNAME, PASSWORD, dbName=DBNAME)
+        cdb = ContactsDb(HOST, USERNAME, PASSWORD, DBNAME, TABLE)
         Contact.connect(cdb)
         testContact.save()
 
@@ -81,7 +83,7 @@ class ContactEditTest(unittest.TestCase):
         
 class ContactDeleteTest(unittest.TestCase):
     def setUp(self):
-        cdb = ContactsDb(USERNAME, PASSWORD, dbName=DBNAME)
+        cdb = ContactsDb(HOST, USERNAME, PASSWORD, DBNAME, TABLE)
         Contact.connect(cdb)
         testContact.save()
 
@@ -105,7 +107,7 @@ class ContactDeleteTest(unittest.TestCase):
         
 class ContactRetrieveTest(unittest.TestCase):
     def setUp(self):
-        cdb = ContactsDb(USERNAME, PASSWORD, dbName=DBNAME)
+        cdb = ContactsDb(HOST, USERNAME, PASSWORD, DBNAME, TABLE)
         Contact.connect(cdb)
         testContact.save()
 

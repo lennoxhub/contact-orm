@@ -8,7 +8,7 @@ UNDEFINED_ID = None
 class ContactsDb(object):
     MALE = 'male'
     FEMALE = 'female'
-    def __init__(self, username, password, host="localhost", dbName='', tableName='contacts'):
+    def __init__(self, host, username, password, dbName, tableName):
         self.dbUsername = username
         self.dbPassword = password
         self.dbHost = host
@@ -55,7 +55,6 @@ class ContactsDb(object):
             self.conn.commit()
             id = cursor.lastrowid
             contact.id = id
-            print id
             return contact
         except Exception, e:
             self.conn.rollback()
@@ -134,8 +133,16 @@ class Contact():
         if self.id:
             return Contact.contactDb.update(self)
         return False
+    
+    def __repr__(self):
+        return '#{} {} ({}) {} phone:{}'.format(self.id, self.name, self.gender,
+                                                self.description, self.phone)
+    
+    def __str__(self):
+        return self.__repr__()
         
         
     def saved(self):
-        return self.id != UNDEFINED_ID    
+        return self.id != UNDEFINED_ID  
+    
     
